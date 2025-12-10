@@ -8,7 +8,9 @@ class Widget:
         self.parent = parent
         self.colors = colors
         self.frame = tk.Frame(parent,borderwidth=2,relief=tk.RIDGE)
-
+        self.button = ttk.Button(self.frame, text="Activate")
+        self.button.pack(side=tk.RIGHT, padx=5, pady=5)
+    
     def pack(self, **kwargs):
         """Allow easy placement of ticker."""
         self.frame.pack(**kwargs)

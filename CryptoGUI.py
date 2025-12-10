@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 import json
 
-import CryptoHelper
+import matplotlib
+from CryptoHelper import *
 import BaseGUI
 
 class Ticker(BaseGUI.Widget):
@@ -11,16 +12,17 @@ class Ticker(BaseGUI.Widget):
         target = self.frame
         self.is_active = False
         self.symbol = symbol
-        self.websocket = CryptoHelper.CryptoWS(stream=f"{self.symbol}@ticker"
-                                               ,on_message=self.on_message
-                                               ,on_error=lambda ws, err: print(f"{self.symbol} error: {err}")
-                                               ,on_close=lambda ws, s, m: print(f"{self.symbol} closed")
-                                                ,on_open=lambda ws: print(f"{self.symbol} connected")
-                                                )
-        # Title
-        ttk.Label(target, text="display_name", 
-                 font=("Arial", 16, "bold")).pack()
-        
+        self.websocket = CryptoWS(stream=f"{self.symbol}@ticker"
+                                ,on_message=self.on_message
+                                ,on_error=lambda ws, err: print(f"{self.symbol} error: {err}")
+                                ,on_close=lambda ws, s, m: print(f"{self.symbol} closed")
+                                ,on_open=lambda ws: print(f"{self.symbol} connected")
+                                )
+        # Title on same line as button
+        ttk.Label(target, text=f"{self.symbol[:3].upper()}", 
+            font=("Arial", 16, "bold")).pack(side=tk.LEFT)
+        ttk.Label(target, text=f"{self.symbol[3:].upper()}",
+            font=("Arial", 8, "bold")).pack(side=tk.LEFT)
         # Price
         self.price_label = tk.Label(target, text="--,---", 
                                     font=("Arial", 40, "bold"))
@@ -71,4 +73,95 @@ class Ticker(BaseGUI.Widget):
             return
         self.is_active = False
         self.websocket.close()
-        
+
+class Book(BaseGUI.Widget):
+    def __init__(self, parent,symbol, colors=[]):
+        super().__init__(parent, colors)
+        target = self.frame
+        self.symbol = symbol
+        # Title on same line as button
+        ttk.Label(target, text=f"{self.symbol[:3].upper()}", 
+            font=("Arial", 16, "bold")).pack(side=tk.LEFT)
+        ttk.Label(target, text=f"{self.symbol[3:].upper()}",
+            font=("Arial", 8, "bold")).pack(side=tk.LEFT)
+
+    def get_book(self):
+        """Fetch order book."""
+        book = CryptoREST().book_depth(self.symbol, limit=10)
+        print(book)
+        return book
+
+class VolumeHistory(BaseGUI.Widget):
+    def __init__(self, parent,symbol, colors=[]):
+        super().__init__(parent, colors)
+        target = self.frame
+        self.symbol = symbol
+        # Title on same line as button
+        ttk.Label(target, text=f"{self.symbol[:3].upper()}", 
+            font=("Arial", 16, "bold")).pack(side=tk.LEFT)
+        ttk.Label(target, text=f"{self.symbol[3:].upper()}",
+            font=("Arial", 8, "bold")).pack(side=tk.LEFT)
+
+    def get_volume_history(self):
+        """Fetch volume history."""
+        stats = CryptoREST().stat_24(self.symbol)
+        print(stats)
+        return stats
+
+class TradeHistory(BaseGUI.Widget):
+    def __init__(self, parent,symbol, colors=[]):
+        super().__init__(parent, colors)
+        target = self.frame
+        self.symbol = symbol
+        # Title on same line as button
+        ttk.Label(target, text=f"{self.symbol[:3].upper()}", 
+            font=("Arial", 16, "bold")).pack(side=tk.LEFT)
+        ttk.Label(target, text=f"{self.symbol[3:].upper()}",
+            font=("Arial", 8, "bold")).pack(side=tk.LEFT)
+
+    def get_trade_history(self):
+        """Fetch trade history."""
+        trades = CryptoREST().trades(self.symbol, limit=5)
+        print(trades)
+        return trades
+
+class PriceHistory(BaseGUI.Widget):
+    def __init__(self, parent,symbol, colors=[]):
+        super().__init__(parent, colors)
+        target = self.frame
+        self.symbol = symbol
+        # Title on same line as button
+        ttk.Label(target, text=f"{self.symbol[:3].upper()}", 
+            font=("Arial", 16, "bold")).pack(side=tk.LEFT)
+        ttk.Label(target, text=f"{self.symbol[3:].upper()}",
+            font=("Arial", 8, "bold")).pack(side=tk.LEFT)
+
+    def get_price_history(self):
+        """Fetch price history."""
+        price = CryptoREST().price(self.symbol)
+        print(price)
+        return price
+
+class KlineHistory(BaseGUI.Widget):
+    def __init__(self, parent,symbol, colors=[]):
+        super().__init__(parent, colors)
+        target = self.frame
+        self.symbol = symbol
+        # Title on same line as button
+        ttk.Label(target, text=f"{self.symbol[:3].upper()}", 
+            font=("Arial", 16, "bold")).pack(side=tk.LEFT)
+        ttk.Label(target, text=f"{self.symbol[3:].upper()}",
+            font=("Arial", 8, "bold")).pack(side=tk.LEFT)
+
+    def get_kline_history(self):
+        """Fetch kline history."""
+        klines = CryptoREST().kline(self.symbol, interval="1h", limit=24)
+        print(klines)
+        return klines
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    ticker = Ticker(root, "btcusdt")
+    ticker.pack()
+    ticker.start()
+    root.mainloop()
