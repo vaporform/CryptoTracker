@@ -2,7 +2,6 @@ import websocket
 import json
 import threading
 import requests
-import time
 
 class WebsocketHelper(threading.Thread):
     '''
@@ -60,6 +59,9 @@ class WebsocketHelper(threading.Thread):
         return True
 
 class CryptoWS(WebsocketHelper):
+    '''
+    Class for handling Binance's Websocket
+    '''
     def __init__(self,base="wss://stream.binance.com:9443/ws/",stream=None):
         if stream != None:
             super().__init__(url=base+stream)
