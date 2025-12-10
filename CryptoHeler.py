@@ -38,11 +38,12 @@ class CryptoWebSocket(threading.Thread):
     def run(self):
         self.ws.run_forever()
 
-c1 = CryptoWebSocket(url="wss://stream.binance.com:9443/ws/btcusdt@trade")
-c1.start()
+if __name__ == "__main__":
+    c1 = CryptoWebSocket(url="wss://stream.binance.com:9443/ws/btcusdt@trade")
+    c1.start()
 
-past = None
-while True:
-    if c1.last_message is not None and c1.last_message != past:
-        past = c1.last_message
-        print(c1.last_message)
+    past = None
+    while True:
+        if c1.last_message is not None and c1.last_message != past:
+            past = c1.last_message
+            print(c1.last_message)
