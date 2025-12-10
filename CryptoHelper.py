@@ -7,36 +7,25 @@ class WebsocketHelper(threading.Thread):
     '''
     Class for handling websocket connections.
     '''
-    def __init__(self,url=None):
+    def __init__(self,url=None,on_message=None,on_error=None,on_close=None,on_open=None):
         super().__init__(daemon=True)
         self.url = url
         self.last_message = None
+        self.active = False
         
         if self.url != None:
             self.ws = websocket.WebSocketApp(
                 self.url,
-                on_message=self.on_message,
-                on_error=self.on_error,
-                on_close=self.on_close,
-                on_open=self.on_open
+                on_message=on_message,
+                on_error=on_error,
+                on_close=on_close,
+                on_open=on_open
             )
         else:
             raise ValueError("Object has no URL! Assign URL to object before running.")
-    
-    def on_message(self,ws, message):
-        data = json.loads(message)
-        self.last_message = data
-
-    def on_error(self,ws, error):
-        print(f"Error: {error}")
-
-    def on_close(self,ws, close_status, close_msg):
-        print("Connection closed")
-
-    def on_open(self,ws):
-        print("Connected to URL.")
 
     def run(self):
+        self.active = True
         self.ws.run_forever()
 
     def close(self):
@@ -44,9 +33,11 @@ class WebsocketHelper(threading.Thread):
         try:
             self.ws.keep_running = False
             self.ws.close()
+            self.active = False
         except Exception as exc:
             print(f"Close error: {exc}")
 
+        self.active = False
         print("WebSocket close requested.")
 
         # Avoid deadlock if close is called from within the same thread
@@ -62,9 +53,9 @@ class CryptoWS(WebsocketHelper):
     '''
     Class for handling Binance's Websocket
     '''
-    def __init__(self,base="wss://stream.binance.com:9443/ws/",stream=None):
+    def __init__(self,base="wss://stream.binance.com:9443/ws/",stream=None,on_message=None,on_error=None,on_close=None,on_open=None):
         if stream != None:
-            super().__init__(url=base+stream)
+            super().__init__(url=base+stream,on_message=on_message,on_error=on_error,on_close=on_close,on_open=on_open)
         else:
             assert("WEBSOCKET HAS NOT PROVIDED STREAM!")
 
@@ -104,12 +95,22 @@ class CryptoREST(RESTHelper):
     def kline(self,symbol,interval="1h",limit=24):
         return self.get("/api/v3/klines",{"symbol":symbol,"interval":interval,"limit":limit})
 
+# ...existing code...
+
 if __name__ == "__main__":
     a = 1
     n = CryptoREST()
     print(n.price("BTCUSDT"))
-    '''
-    c1 = CryptoWebSocket(url="wss://stream.binance.com:9443/ws/btcusdt@trade")
+
+    # Fix: capture c1 in the lambda and set attribute on it, not ws
+    c1 = CryptoWS(stream="btcusdt@trade")
+    c1.on_message = lambda ws, msg: setattr(c1, "last_message", msg)
+    
+    # Or better: define a proper callback method
+    def handle_message(ws, msg):
+        c1.last_message = msg
+    
+    c1 = CryptoWS(stream="btcusdt@trade", on_message=handle_message)
     c1.start()
 
     past = None
@@ -122,4 +123,3 @@ if __name__ == "__main__":
             c1.close()
             print("Finished")
             break
-    '''

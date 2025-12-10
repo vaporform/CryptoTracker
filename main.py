@@ -1,33 +1,37 @@
-import websocket
-import json
-import time
-def on_message(ws, message):
-    data = json.loads(message)
-    print(f"BTC Price: ${data['c']}")  # 'c' is current price
+import tkinter as tk
+from tkinter import ttk
 
-def on_error(ws, error):
-    print(f"Error: {error}")
+from CryptoGUI import *
 
-def on_close(ws, close_status, close_msg):
-    print("Connection closed")
+class Application:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Crypto Dashboard")
+        self.root.geometry("800x300")
+        
+        # Create ticker panel
+        ticker_frame = ttk.Frame(root, padding=20)
+        ticker_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # Create BTC ticker
+        self.btc_ticker = Ticker(ticker_frame, "btcusdt")
+        self.btc_ticker.pack()
 
-def on_open(ws):
-    print("Connected to Binance")
+        # Create AAA ticker
+        self.aaa = Ticker(ticker_frame, "metusdt")
+        self.aaa.pack()
+        
+        self.btc_ticker.start()
+        self.aaa.start()
+    
+    def on_closing(self):
+        """Clean up when closing."""
+        self.aaa.stop()
+        self.btc_ticker.stop()
+        self.root.destroy()
 
-# WebSocket URL for BTC/USDT ticker
-ws_url = "wss://stream.binance.com:9443/ws/btcusdt@ticker"
-
-ws = websocket.WebSocketApp(
-    ws_url,
-    on_message=on_message,
-    on_error=on_error,
-    on_close=on_close,
-    on_open=on_open
-)
-
-ws.run_forever()
-past = ws.on_message
-while True:
-    if past != str(ws.on_message):
-        past = str(ws.on_message)
-        print(ws.on_message)
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = Application(root)
+    root.protocol("WM_DELETE_WINDOW", app.on_closing)
+    root.mainloop()
