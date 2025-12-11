@@ -45,7 +45,7 @@ class Book(BaseUI.Widget):
         Renders the Order Book by clearing and repopulating two separate 
         Treeview widgets for Asks (Sells) and Bids (Buys).
         """
-        print("Rendering Book Update...")
+        #print("Rendering Book Update...")
 
         # --- 1. Render ASKS (Sells / Red) ---
         

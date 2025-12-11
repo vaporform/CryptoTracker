@@ -21,7 +21,7 @@ class VolumeHistory(BaseUI.Widget):
 
     def get_volume_history(self):
         """Fetch volume history."""
-        stats = CryptoREST().stat_24(self.symbol)
+        stats = CryptoREST().stat_24(self.symbol.upper())
         print(stats)
         return stats
 
@@ -29,5 +29,6 @@ class VolumeHistory(BaseUI.Widget):
 if __name__ == "__main__":
     root = tk.Tk()
     widget = VolumeHistory(root, "btcusdt")
+    widget.get_volume_history()
     widget.pack()
     root.mainloop()
