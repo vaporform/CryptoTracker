@@ -3,7 +3,7 @@ from tkinter import ttk
 import json
 
 import matplotlib
-from CryptoHelper import *
+from Components.CryptoHelper import *
 import BaseGUI
 
 class Ticker(BaseGUI.Widget):
@@ -23,6 +23,7 @@ class Ticker(BaseGUI.Widget):
             font=("Arial", 16, "bold")).pack(side=tk.LEFT)
         ttk.Label(target, text=f"{self.symbol[3:].upper()}",
             font=("Arial", 8, "bold")).pack(side=tk.LEFT)
+        
         # Price
         self.price_label = tk.Label(target, text="--,---", 
                                     font=("Arial", 40, "bold"))

@@ -1,7 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
 
-from CryptoGUI import *
+from Components.Ticker import Ticker
+from Components.Book import Book
+from Components.PriceHistory import PriceHistory
+from Components.TradeHistory import TradeHistory
+from Components.VolumeHistory import VolumeHistory
+from Components.KlineHistory import KlineHistory
 
 class Application:
     def __init__(self, root):
