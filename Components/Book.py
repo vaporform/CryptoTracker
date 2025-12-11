@@ -41,7 +41,12 @@ class Book(BaseUI.Widget):
         self.ask_tree.pack()
         self.bid_tree.pack()
 
-        self.websocket = CryptoWS(stream=f"{self.symbol}@depth", on_message=self.on_message, on_error=lambda ws, err: print(f"{self.symbol} error: {err}"), on_close=lambda ws, s, m: print(f"{self.symbol} closed"), on_open=lambda ws: print(f"{self.symbol} connected")
+        self.websocket = CryptoWS(stream=f"{self.symbol}@depth",
+                                  on_message=self.on_message,
+                                  on_error=lambda ws,
+                                  err: print(f"{self.symbol} error: {err}"),
+                                  on_close=lambda ws, s, m: print(f"{self.symbol} closed"),
+                                  on_open=lambda ws: print(f"{self.symbol} connected")
                                   )
 
     def render(self, bids, asks):

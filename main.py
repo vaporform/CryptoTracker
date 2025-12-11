@@ -13,7 +13,7 @@ class Application:
     def __init__(self, root):
         self.root = root
         self.root.title("Crypto Dashboard")
-        self.root.geometry("640x480")
+        self.root.geometry("1280x720")
 
         # --- Main Container ---
         mainframe = ttk.Frame(root, padding=10)
@@ -28,7 +28,7 @@ class Application:
 
         # Row 0: Tickers (Fixed height, weight=0)
         # Row 1: Trade History (Takes remaining vertical space, weight=1)
-        mainframe.rowconfigure(0, weight=0)
+        mainframe.rowconfigure(0, weight=1)
         mainframe.rowconfigure(1, weight=1)
 
         self.btc_ticker = Ticker(mainframe, "btcusdt", title="BTC", sub="USDT")
