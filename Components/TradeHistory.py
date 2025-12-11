@@ -12,8 +12,8 @@ except ImportError:
 
 # WEBSOCKET
 class TradeHistory(BaseUI.Widget):
-    def __init__(self, parent, symbol, colors=[]):
-        super().__init__(parent, colors)
+    def __init__(self, parent,symbol, colors=[],title="",sub=""):
+        super().__init__(parent, colors,middle="Trades",title=title,subtitle=sub)
         target = self.frame
         self.symbol = symbol
         self.is_active = False
@@ -23,14 +23,7 @@ class TradeHistory(BaseUI.Widget):
                                 ,on_close=lambda ws, s, m: print(f"{self.symbol} closed")
                                 ,on_open=lambda ws: print(f"{self.symbol} connected")
                                 )
-        
-        # Title on same line as button
-        title_frame = tk.Frame(target)
-        title_frame.pack(fill='x')
-        ttk.Label(title_frame, text=f"{self.symbol[:3].upper()}",
-                  font=("Arial", 16, "bold")).pack(side=tk.LEFT)
-        ttk.Label(title_frame, text=f"{self.symbol[3:].upper()}",
-                  font=("Arial", 8, "bold")).pack(side=tk.LEFT)
+    
         
         # Trade history table
         columns = ('time', 'price', 'quantity')

@@ -15,17 +15,12 @@ except ImportError:
 
 # REST
 class KlineHistory(BaseUI.Widget):
-    def __init__(self, parent, symbol, colors=[]):
-        super().__init__(parent, colors)
+    def __init__(self, parent,symbol, colors=[],title="",sub=""):
+        super().__init__(parent, colors,middle="Kline",title=title,subtitle=sub)
         target = self.frame
         self.symbol = symbol
-        # Title on same line as button
-        ttk.Label(target, text=f"{self.symbol[:3].upper()}",
-                  font=("Arial", 16, "bold")).pack(side=tk.LEFT)
-        ttk.Label(target, text=f"{self.symbol[3:].upper()}",
-                  font=("Arial", 8, "bold")).pack(side=tk.LEFT)
 
-            # --- Matplotlib Canvas ---
+        # --- Matplotlib Canvas ---
         self.fig = Figure(figsize=(8, 4), dpi=100)
         self.ax = self.fig.add_subplot(111)
         self.canvas = FigureCanvasTkAgg(self.fig, master=target)
@@ -74,6 +69,9 @@ class KlineHistory(BaseUI.Widget):
         self.ax.autoscale_view()
         self.fig.tight_layout()
         self.canvas.draw()
+
+    def start(self):
+        self.parent.after(5000, self.render) # Update 5 seconds :)
 
 if __name__ == "__main__":
     root = tk.Tk()

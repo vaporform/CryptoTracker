@@ -10,17 +10,11 @@ except ImportError:
 
 # WEBSOCKET
 class Book(BaseUI.Widget):
-    def __init__(self, parent, symbol, colors=[]):
-        super().__init__(parent, colors)
+    def __init__(self, parent,symbol, colors=[],title="",sub=""):
+        super().__init__(parent, colors,middle="Book",title=title,subtitle=sub)
         target = self.frame
         self.symbol = symbol
         self.is_active = False
-
-                # Title on same line as button
-        ttk.Label(target, text=f"{self.symbol[:3].upper()}",
-                  font=("Arial", 16, "bold")).pack(side=tk.LEFT)
-        ttk.Label(target, text=f"{self.symbol[3:].upper()}",
-                  font=("Arial", 8, "bold")).pack(side=tk.LEFT)
 
         self.ask_tree = ttk.Treeview(target, columns=("Ask", "Quantity"), show='headings', height=15)
         self.ask_tree.heading("Ask", text="Ask")
@@ -77,9 +71,6 @@ class Book(BaseUI.Widget):
             # We assume tags ('bid') are configured in __init__
             self.bid_tree.insert("", tk.END, values=(f"{float(price):,.2f}", f"{float(qty):.6f}"), tags=('bid',))
 
-        # Note on Formatting: 
-        # The price and quantity strings are converted to floats and formatted
-        # for better readability (commas for price, more decimals for quantity).
     def on_message(self, ws, message):
         """Handle price updates."""
         if not self.is_active:

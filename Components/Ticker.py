@@ -11,8 +11,8 @@ except ImportError:
 
 # WEBSOCKET
 class Ticker(BaseUI.Widget):
-    def __init__(self, parent,symbol, colors=[]):
-        super().__init__(parent, colors)
+    def __init__(self, parent,symbol, colors=[],title="",sub=""):
+        super().__init__(parent, colors,middle="Ticker",title=title,subtitle=sub)
         target = self.frame
         self.is_active = False
         self.symbol = symbol
@@ -22,11 +22,6 @@ class Ticker(BaseUI.Widget):
                                 ,on_close=lambda ws, s, m: print(f"{self.symbol} closed")
                                 ,on_open=lambda ws: print(f"{self.symbol} connected")
                                 )
-        # Title on same line as button
-        ttk.Label(target, text=f"{self.symbol[:3].upper()}", 
-            font=("Arial", 16, "bold")).pack(side=tk.LEFT)
-        ttk.Label(target, text=f"{self.symbol[3:].upper()}",
-            font=("Arial", 8, "bold")).pack(side=tk.LEFT)
         
         # Price
         self.price_label = tk.Label(target, text="--,---", 
