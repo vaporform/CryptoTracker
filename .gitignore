@@ -3,3 +3,12 @@ test.py
 checklist.txt
 __pycache__
 Components/__pycache__
+Components/._Book.py
+Components/._CryptoHelper.py
+Components/._KlineHistory.py
+Components/._PriceHistory.py
+Components/._Ticker.py
+Components/._TradeHistory.py
+Components/._VolumeHistory.py
+._main.py
+._.gitignore
