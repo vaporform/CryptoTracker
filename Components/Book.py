@@ -8,66 +8,108 @@ except ImportError:
     from CryptoHelper import *
     import BaseUI
 
-#REST
+# WEBSOCKET
 class Book(BaseUI.Widget):
     def __init__(self, parent, symbol, colors=[]):
         super().__init__(parent, colors)
         target = self.frame
         self.symbol = symbol
-        # Title on same line as button
+        self.is_active = False
+
+                # Title on same line as button
         ttk.Label(target, text=f"{self.symbol[:3].upper()}",
                   font=("Arial", 16, "bold")).pack(side=tk.LEFT)
         ttk.Label(target, text=f"{self.symbol[3:].upper()}",
                   font=("Arial", 8, "bold")).pack(side=tk.LEFT)
 
-        self.treeview = ttk.Treeview(target, columns=("Price", "Quantity"), show='headings', height=15)
-        self.treeview.heading("Price", text="Price")
-        self.treeview.heading("Quantity", text="Quantity")
-        self.render()
-        
-    def get_book(self,limit=10):
-        """Fetch order book."""
-        book = CryptoREST().book_depth(self.symbol.upper(), limit=limit)
-        
-        #print("GOT BOOK!",book)
-        return book
+        self.ask_tree = ttk.Treeview(target, columns=("Ask", "Quantity"), show='headings', height=15)
+        self.ask_tree.heading("Ask", text="Ask")
+        self.ask_tree.heading("Quantity", text="Quantity")
 
-    def render(self):
-        """Fetch and display the latest book."""
-        print("Rendering Book...")
-        book = self.get_book()
-        if not book or "bids" not in book or "asks" not in book:
+        self.bid_tree = ttk.Treeview(target, columns=("Bid", "Quantity"), show='headings', height=15)
+        self.bid_tree.heading("Bid", text="Bid")
+        self.bid_tree.heading("Quantity", text="Quantity")
+
+        self.ask_tree.pack()
+        self.bid_tree.pack()
+
+        self.websocket = CryptoWS(stream=f"{self.symbol}@depth"
+                                ,on_message=self.on_message
+                                ,on_error=lambda ws, err: print(f"{self.symbol} error: {err}")
+                                ,on_close=lambda ws, s, m: print(f"{self.symbol} closed")
+                                ,on_open=lambda ws: print(f"{self.symbol} connected")
+                                )
+                  
+    def render(self, bids, asks):
+        """
+        Renders the Order Book by clearing and repopulating two separate 
+        Treeview widgets for Asks (Sells) and Bids (Buys).
+        """
+        print("Rendering Book Update...")
+
+        # --- 1. Render ASKS (Sells / Red) ---
+        
+        # Asks should be ordered from the lowest price (best price to sell) down to higher prices.
+        # The lowest ask is at the top, closest to the spread.
+
+        # Clear old data
+        for row in self.ask_tree.get_children():
+            self.ask_tree.delete(row)
+            
+        # Insert new asks: highest price at the bottom of the visible section
+        # Note: We reverse the order of the asks for proper visual display
+        # (Lowest ask at the top of the treeview)
+        for price, qty in reversed(asks):
+            # We assume tags ('ask') are configured in __init__
+            self.ask_tree.insert("", tk.END, values=(f"{float(price):,.2f}", f"{float(qty):.6f}"), tags=('ask',))
+
+        # --- 2. Render BIDS (Buys / Green) ---
+        
+        # Bids should be ordered from the highest price (best price to buy) down to lower prices.
+        # The highest bid is at the top, closest to the spread.
+
+        # Clear old data
+        for row in self.bid_tree.get_children():
+            self.bid_tree.delete(row)
+
+        # Insert new bids: highest price at the top of the treeview
+        for price, qty in bids:
+            # We assume tags ('bid') are configured in __init__
+            self.bid_tree.insert("", tk.END, values=(f"{float(price):,.2f}", f"{float(qty):.6f}"), tags=('bid',))
+
+        # Note on Formatting: 
+        # The price and quantity strings are converted to floats and formatted
+        # for better readability (commas for price, more decimals for quantity).
+    def on_message(self, ws, message):
+        """Handle price updates."""
+        if not self.is_active:
             return
-
-        # Clear current rows
-        for row in self.treeview.get_children():
-            self.treeview.delete(row)
-
-        # Add asks (in reverse for correct order)
-        for price, qty in reversed(book.get("asks", [])):
-            self.treeview.insert("", tk.END, values=(price, qty), tags=('ask',))
-
-        # Add a separator
-        self.treeview.insert("", tk.END, values=("-----", "-----"))
-
-        # Add bids
-        for price, qty in book.get("bids", []):
-            self.treeview.insert("", tk.END, values=(price, qty), tags=('bid',))
-
-        # Style the rows
-        self.treeview.tag_configure('bid', foreground='green')
-        self.treeview.tag_configure('ask', foreground='red')
-        self.treeview.pack()
+        
+        data = json.loads(message)
+        bids = data['b']
+        asks = data['a']
+        
+        # Schedule GUI update on main thread
+        self.parent.after(0, self.render, bids, asks)
     
-    def update_interval(self, interval_ms=1000):
-        """Update the book display at regular intervals."""
-        self.render()
-        self.frame.after(interval_ms, self.update_interval, interval_ms)
+    def start(self):
+        """Start the ticker updates."""
+        if self.is_active:
+            return
+        self.is_active = True
+        self.websocket.start()
+    
+    def stop(self):
+        """Stop the ticker updates."""
+        if not self.is_active:
+            return
+        self.is_active = False
+        self.websocket.close()
     
 if __name__ == "__main__":
     
     root = tk.Tk()
     widget = Book(root, "btcusdt")
     widget.pack()
-    widget.update_interval(1000)  # Refresh every 1 second
+    widget.start()  # Refresh every 1 second
     root.mainloop()
