@@ -7,7 +7,7 @@ class Widget:
         self.parent = parent
         self.colors = colors
         self.frame = tk.Frame(parent,borderwidth=2,relief=tk.RIDGE)
-        self.button = ttk.Button(self.frame, text="Activate")
+        self.button = ttk.Button(self.frame, text="Close")
         self.button.pack(side=tk.RIGHT, padx=5, pady=5)
     
     def pack(self, **kwargs):
@@ -33,3 +33,10 @@ class TestWidget(Widget):
 
         ttk.Label(target, text="Hello World", 
                  font=("Arial", 16, "bold")).pack()
+
+if __name__ == "__main__":
+    
+    root = tk.Tk()
+    widget = Widget(root)
+    widget.pack()
+    root.mainloop()
