@@ -60,8 +60,7 @@ class TradeHistory(BaseUI.Widget):
         if not self.is_active:
             return
 
-        trade_time = datetime.fromtimestamp(
-            data['T'] / 1000).strftime('%H:%M:%S')
+        trade_time = datetime.fromtimestamp(data['T'] / 1000).strftime('%H:%M:%S')
         price = float(data['p'])
         quantity = float(data['q'])
         side = 'buy' if data['m'] else 'sell'
