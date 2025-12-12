@@ -23,8 +23,8 @@ class Ticker(BaseUI.Widget):
 
         # Price
         self.price_label = tk.Label(target, text="--,---",
-                                    font=("Arial", 40, "bold"))
-        self.price_label.pack(pady=10)
+                                    font=("Arial", 24, "bold"))
+        self.price_label.pack()
 
         # Change
         self.change_label = ttk.Label(target, text="--",

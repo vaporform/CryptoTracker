@@ -6,6 +6,7 @@ import numpy as np
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.patches as patches
+import matplotlib.patheffects as pe
 
 try:
     from .CryptoHelper import *
@@ -86,7 +87,8 @@ class KlineHistory(BaseUI.Widget):
             
         # Lastly, draw the line where the price is as of now.
         self.ax.axhline(data[-1, 3], color='blue', linestyle='--', linewidth=1)
-        self.ax.text(0, data[-1, 3], f"{data[-1, 3]:.2f}", color='blue', va='bottom', ha='left')
+        self.ax.text(0, data[-1, 3], f"{data[-1, 3]:.2f}", color='blue', va='bottom', ha='left',
+                    path_effects=[pe.withStroke(linewidth=4, foreground="white")])
         self.ax.grid(True)
         self.ax.set_ylabel('Price')
         self.ax.get_xaxis().set_visible(False)

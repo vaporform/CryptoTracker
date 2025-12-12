@@ -8,20 +8,20 @@ class Widget:
     def __init__(self, parent, colors=[], title="Widget", subtitle="base", middle=None):
         self.parent = parent
         self.colors = colors
-        self.active = False
-
-        self.frame = tk.Frame(parent, borderwidth=2,
-                              relief=tk.RIDGE, padx=10, pady=10)
-        self.header = tk.Frame(self.frame)
-
+        self.active = True
+        self.widget_frame = tk.Frame(parent, borderwidth=2,
+                              relief=tk.RIDGE, padx=6, pady=6)
+        self.header = tk.Frame(self.widget_frame)
+        # Store stuff for the actual content
+        self.frame = tk.Frame(self.widget_frame)
         # 1. Pack the Button to the RIGHT
-        self.button = ttk.Button(self.header, text="Close", command=self.hide)
-        self.button.pack(side=tk.RIGHT, padx=5)
+        self.button = ttk.Button(self.header, text="Hide",width=5, command=self.hide)
+        self.button.pack(side=tk.RIGHT)
 
         # 2. Setup the Title (Left side) - DO NOT PACK YET
         self.cute = tk.Frame(self.header)
-        self.a = ttk.Label(self.cute, text=title, font=("Arial", 16, "bold"))
-        self.b = ttk.Label(self.cute, text=subtitle, font=("Arial", 8, "bold"))
+        self.a = ttk.Label(self.cute, text=title, font=("Arial", 12, "bold"))
+        self.b = ttk.Label(self.cute, text=subtitle, font=("Arial", 10, "bold"))
 
         self.a.grid(row=0, column=0, columnspan=2)
         self.b.grid(row=1, column=0, columnspan=2, sticky='w')
@@ -38,28 +38,31 @@ class Widget:
             c.pack(side=tk.LEFT, expand=True, fill="both")
 
         self.header.pack(side=tk.TOP, fill='x', expand=False)
-
+        self.frame.pack(side=tk.TOP, fill='both', expand=True)
     def hide(self):
-        if self.active:
-            self.pack_forget()
-        else:
-            self.pack()
-        self.active = not self.active
+        try:
+            if self.active:
+                self.frame.pack_forget()
+            else:
+                self.frame.pack()
+            self.active = not self.active
+            
+        except Exception as e:
+            print(f"Error: {e}")
 
     def pack(self, **kwargs):
         '''Allow easy placement of ticker.'''
-        self.frame.pack(**kwargs)
+        self.widget_frame.pack(**kwargs)
 
     def grid(self, **kwargs):
         '''Allow easy placement of ticker.'''
-        self.frame.grid(**kwargs)
-
+        self.widget_frame.grid(**kwargs)
     def grid_forget(self):
-        self.frame.grid_forget()
+        self.widget_frame.grid_forget()
 
     def pack_forget(self):
         '''Hide the ticker.'''
-        self.frame.pack_forget()
+        self.widget_frame.pack_forget()
 
 
 class TestWidget(Widget):
