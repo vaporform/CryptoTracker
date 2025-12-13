@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-from Components.Ticker import Ticker
+from Components.Ticker import Ticker, MiniTicker
 from Components.Book import Book
 from Components.PriceHistory import PriceHistory
 from Components.TradeHistory import TradeHistory
@@ -22,9 +22,6 @@ class Application:
         self.root.title("Crypto Dashboard")
         self.root.geometry("1280x720")
         
-        # Mock data for the OptionMenu
-        self.cryptos = ["btcusdt", "ethusdt", "solusdt", "adausdt"]
-
         # --- Main Container ---
         mainframe = ttk.Frame(root, padding=10)
         mainframe.pack(fill=tk.BOTH, expand=True)
@@ -55,21 +52,15 @@ class Application:
         self.Options.grid(row=0, column=0, sticky="ew", padx=(0, 5), pady=(0, 5))
         
         # Row 1, Col 0: Ticker 1
-        self.Ticker1 = Ticker(mainframe, "btcusdt", title="BTC", sub="USDT")
-        self.Ticker1.grid(row=1, column=0, sticky="nsew", padx=(0, 5), pady=(0, 2))
-        
+        self.Ticker = Ticker(mainframe, "btcusdt", title="BTC", sub="USDT")
+        self.Ticker.grid(row=1, column=0, sticky="nsew", padx=(0, 5), pady=(0, 2))
         # Row 2, Col 0: Ticker 2
-        self.Ticker2 = Ticker(mainframe, "ethusdt", title="ETH", sub="USDT")
-        self.Ticker2.grid(row=2, column=0, sticky="nsew", padx=(0, 5), pady=2)
-        
-        # Row 3, Col 0: Ticker 3
-        self.Ticker3 = Ticker(mainframe, "solusdt", title="SOL", sub="USDT")
-        self.Ticker3.grid(row=3, column=0, sticky="nsew", padx=(0, 5), pady=2)
-
+        self.MiniTicker = MiniTicker(mainframe, self.cryptos)
+        self.MiniTicker.grid(row=2, column=0, sticky="nsew", padx=(0, 5), pady=(0, 2))
         # Row 4, Col 0: Trade History
         self.Trader = TradeHistory(
             mainframe, "btcusdt", title="BTC", sub="USDT")
-        self.Trader.grid(row=4, column=0, sticky="nsew",
+        self.Trader.grid(row=3, column=0, sticky="nsew",
                          pady=(2, 0), padx=(0, 5))
 
         # Row 0, Col 1: Kline History (Spans 5 rows)
@@ -87,9 +78,8 @@ class Application:
         self.Book.start()
         self.Trader.start()
         self.Kline.start()
-        self.Ticker1.start()
-        self.Ticker2.start()
-        self.Ticker3.start()
+        self.Ticker.start()
+        self.MiniTicker.start()
 
     def on_crypto_select(self, *args):
         '''Callback for when a new crypto is selected from the dropdown.'''
@@ -128,16 +118,56 @@ class Application:
                 
     def on_closing(self):
         '''Clean up for those websockets.'''
+        self.save_preferences()
         self.Trader.stop()
-        self.Ticker1.stop()
-        self.Ticker2.stop()
-        self.Ticker3.stop()
+        self.Ticker.stop()
+        self.MiniTicker.stop()
         self.Book.stop()
+        # Before that, check every single widget for hiding.
+        
         self.root.destroy()
-
+        
+    def save_preferences(self):
+        '''Save user preferences to a file.'''
+        l = [
+            "Ticker:"+str(self.Ticker.active)+"\n",
+            "Trader:"+str(self.Trader.active)+"\n",
+            "Book:"+str(self.Book.active)+"\n",
+            "Kline:"+str(self.Kline.active)+"\n",
+            "MiniTicker:"+str(self.MiniTicker.active)
+        ]
+        with open("preferences.txt", "w") as f:
+            f.writelines(l)
+        pass  # Implement saving logic here
+    
+    def load_preferences(self):
+        '''Load user preferences from a file.'''
+        try:
+            with open("preferences.txt", "r") as f:
+                lines = f.readlines()
+                for line in lines:
+                    
+                    l = line.strip().split(":")
+                    if len(l) != 2:
+                        continue
+                    key, value = l[0], l[1]
+                    if key == "Ticker" and value == "False":
+                        self.Ticker.hide()
+                    elif key == "Trader" and value == "False":
+                        self.Trader.hide()
+                    elif key == "Book" and value == "False":
+                        self.Book.hide()
+                    elif key == "Kline" and value == "False":
+                        self.Kline.hide()
+                    elif key == "MiniTicker" and value == "False":
+                        self.MiniTicker.hide()
+    
+        except FileNotFoundError:
+            pass  # No preferences file found. Skip.
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = Application(root)
+    app.load_preferences()
     root.protocol("WM_DELETE_WINDOW", app.on_closing)
     root.mainloop()

@@ -18,13 +18,12 @@ class TradeHistory(BaseUI.Widget):
     A widget to show you trade history!
     '''
 
-    def __init__(self, parent, symbol, colors=[], title="", sub=""):
-        super().__init__(parent, colors, middle="Trades", title=title, subtitle=sub)
+    def __init__(self, parent, symbol,title="", sub=""):
+        super().__init__(parent, middle="Trades", title=title, subtitle=sub)
         target = self.frame
         self.symbol = symbol
         self.is_active = False
-        self.websocket = CryptoWS(stream=f"{self.symbol}@aggTrade", on_message=self.on_message, on_error=lambda ws, err: print(f"{self.symbol} error: {err}"), on_close=lambda ws, s, m: print(f"{self.symbol} closed"), on_open=lambda ws: print(f"{self.symbol} connected")
-                                  )
+        self.websocket = CryptoWS(stream=f"{self.symbol}@aggTrade", on_message=self.on_message)
 
         # Trade history table
         columns = ('time', 'price', 'quantity')

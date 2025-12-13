@@ -49,7 +49,10 @@ class CryptoWS(WebsocketHelper):
     Class for handling Binance's Websocket
     '''
 
-    def __init__(self, base="wss://stream.binance.com:9443/ws/", stream=None, on_message=None, on_error=None, on_close=None, on_open=None):
+    def __init__(self, base="wss://stream.binance.com:9443/ws/", stream=None, 
+                on_message=None, on_error=lambda ws, err: print(f"WS error: {err}"),
+                on_close=lambda ws, s, m: print(f"WS closed"),
+                on_open=lambda ws: print(f"WS connected")):
         if stream != None:
             super().__init__(url=base+stream, on_message=on_message,
                              on_error=on_error, on_close=on_close, on_open=on_open)

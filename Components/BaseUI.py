@@ -5,9 +5,8 @@ from tkinter import ttk
 
 
 class Widget:
-    def __init__(self, parent, colors=[], title="Widget", subtitle="base", middle=None):
+    def __init__(self, parent, title="Widget", subtitle="base", middle=None):
         self.parent = parent
-        self.colors = colors
         self.active = True
         self.widget_frame = tk.Frame(parent, borderwidth=2,
                               relief=tk.RIDGE, padx=6, pady=6)
@@ -66,8 +65,8 @@ class Widget:
 
 
 class TestWidget(Widget):
-    def __init__(self, parent, colors=[]):
-        super().__init__(parent, colors)
+    def __init__(self, parent):
+        super().__init__(parent)
         target = self.frame
         ttk.Label(target, text="Hello World",
                   font=("Arial", 16, "bold")).pack()

@@ -16,11 +16,9 @@ except ImportError:
     import BaseUI
 
 # REST
-
-
 class KlineHistory(BaseUI.Widget):
-    def __init__(self, parent, symbol, colors=[], title="", sub=""):
-        super().__init__(parent, colors, middle="Kline", title=title, subtitle=sub)
+    def __init__(self, parent, symbol, title="", sub=""):
+        super().__init__(parent, middle="Kline", title=title, subtitle=sub)
         target = self.frame
         self.symbol = symbol
 
@@ -111,10 +109,6 @@ class KlineHistory(BaseUI.Widget):
 
     def start(self):
         self.parent.after(60000, self.render)  # Update 60 seconds :)
-
-    def hide(self):
-        print("Meow")
-
 
 if __name__ == "__main__":
     root = tk.Tk()
