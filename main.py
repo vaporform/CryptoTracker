@@ -3,9 +3,7 @@ from tkinter import ttk
 
 from Components.Ticker import Ticker, MiniTicker
 from Components.Book import Book
-from Components.PriceHistory import PriceHistory
 from Components.TradeHistory import TradeHistory
-from Components.VolumeHistory import VolumeHistory
 from Components.KlineHistory import KlineHistory
 from Components.CryptoHelper import CryptoWS
 
@@ -13,12 +11,13 @@ class Application:
     def __init__(self, root):
         self.cryptos = [
             "btcusdt",
+            "dogeusdt",
             "ethusdt",
             "solusdt",
+            "trxusdt",
             "xrpusdt",
-            "dogeusdt"
         ]
-
+        self.new_symbol = "btcusdt"
         self.root = root
         self.root.title("Crypto Dashboard")
         self.root.geometry("1280x720")
@@ -27,29 +26,23 @@ class Application:
         mainframe = ttk.Frame(root, padding=10)
         mainframe.pack(fill=tk.BOTH, expand=True)
 
-        # --- Grid Configuration ---
-        # Col 0 (Left) & Col 2 (Right): Fixed width (weight=0)
-        # Col 1 (Middle): Takes all extra horizontal space (weight=1)
-        mainframe.columnconfigure(0, weight=0)
-        mainframe.columnconfigure(1, weight=1)
-        mainframe.columnconfigure(2, weight=0)
+        # Configure grid resizing
+        mainframe.columnconfigure(0, weight=1)
+        mainframe.columnconfigure(1, weight=2)
+        mainframe.columnconfigure(2, weight=1)
+        
+        mainframe.rowconfigure(0, weight=0)
+        mainframe.rowconfigure(1, weight=1)
+        mainframe.rowconfigure(2, weight=1)
+        mainframe.rowconfigure(3, weight=1)
+        mainframe.rowconfigure(4, weight=1)
 
-        # Row Configuration (Updated to 5 rows to match the widgets in column 0)
-        # Row 0: Options (Fixed height)
-        # Row 1-4: Tickers and Trader (Take remaining vertical space, split evenly)
-        mainframe.rowconfigure(0, weight=0) # Options Menu
-        mainframe.rowconfigure(1, weight=1) # Ticker 1
-        mainframe.rowconfigure(2, weight=1) # Ticker 2
-        mainframe.rowconfigure(3, weight=1) # Ticker 3
-        mainframe.rowconfigure(4, weight=1) # Trader/TradeHistory
-
-    
         # WIDGET STUFF DOWN HERE!
         self.selected_crypto = tk.StringVar(self.root)
         self.selected_crypto.set(self.cryptos[0]) # default value
-
+        
         # Row 0, Col 0: Options Menu
-        self.Options = ttk.OptionMenu(mainframe, self.selected_crypto, self.cryptos[0], *self.cryptos)
+        self.Options = ttk.OptionMenu(mainframe, self.selected_crypto, self.selected_crypto.get(), *self.cryptos)
         self.Options.grid(row=0, column=0, sticky="ew", padx=(0, 5), pady=(0, 5))
         
         # Row 1, Col 0: Ticker 1
@@ -64,58 +57,60 @@ class Application:
 
         # Row 0, Col 1: Kline History (Spans 5 rows)
         self.Kline = KlineHistory(mainframe, "btcusdt", title="BTC", sub="USDT")
-        self.Kline.grid(row=0, column=1, rowspan=5, sticky="nsew", padx=5) # Changed rowspan to 5
-
+        self.Kline.grid(row=0, column=1, rowspan=5, sticky="nsew", padx=5)
+        
         # Row 0, Col 2: Book (Spans 5 rows)
         self.Book = Book(mainframe, "btcusdt", title="BTC", sub="USDT")
-        self.Book.grid(row=0, column=2, rowspan=5, sticky="nsew") # Changed rowspan to 5
+        self.Book.grid(row=0, column=2, rowspan=5, sticky="nsew")
         
         self.selected_crypto.trace_add("write", self.on_crypto_select)
         
-        # Start methods (assuming they handle data fetching/updates)
-        self.Book.start()
-        self.Trader.start()
-        self.Kline.start()
-        self.Ticker.start()
         self.MiniTicker.start()
+    
+    def change_crypto(self, new_symbol):
+        '''
+        Change the current crypto symbol for all widgets.
+        '''
+        if new_symbol not in self.cryptos:
+            print("Invalid symbol:", new_symbol)
+            return
+        self.new_symbol = new_symbol
+        new_title = self.new_symbol.replace("usdt", "").upper()
+        new_sub = "USDT"
 
+        self.Ticker.symbol = self.new_symbol
+        self.Ticker.t.config(text=new_title)
+        self.Ticker.s.config(text=new_sub)
+        self.Ticker.websocket = CryptoWS(
+            stream=f"{self.new_symbol}@ticker", on_message=self.Ticker.on_message)
+        
+        self.Trader.symbol = self.new_symbol
+        self.Trader.t.config(text=new_title)
+        self.Trader.s.config(text=new_sub)
+        self.Trader.websocket = CryptoWS(
+            stream=f"{self.new_symbol}@aggTrade", on_message=self.Trader.on_message)
+        
+        self.Book.symbol = self.new_symbol
+        self.Book.t.config(text=new_title)
+        self.Book.s.config(text=new_sub)
+        self.Book.websocket = CryptoWS(
+            stream=f"{self.new_symbol}@depth", on_message=self.Book.on_message)
+        
+        self.Kline.symbol = self.new_symbol
+        self.Kline.t.config(text=new_title)
+        self.Kline.s.config(text=new_sub)
+        
+        # Reboot time!
+        self.Kline.render() # Override
+        self.start_widgets()
+        
     def on_crypto_select(self, *args):
         '''
         Callback for when a new crypto is selected from the dropdown.
         '''
 
-        new_symbol = self.selected_crypto.get()
-        new_title = new_symbol.replace("usdt", "").upper()
-        new_sub = "USDT"
-
-        self.Ticker.stop()
-        self.Ticker.symbol = new_symbol
-        self.Ticker.a.config(text=new_title)
-        self.Ticker.b.config(text=new_sub)
-        self.Ticker.websocket = CryptoWS(
-            stream=f"{new_symbol}@ticker", on_message=self.Ticker.on_message)
-        self.Ticker.start()
-
-        self.Trader.stop()
-        self.Trader.symbol = new_symbol
-        self.Trader.a.config(text=new_title)
-        self.Trader.b.config(text=new_sub)
-        self.Trader.websocket = CryptoWS(
-            stream=f"{new_symbol}@aggTrade", on_message=self.Trader.on_message)
-        self.Trader.start()
-
-        self.Book.stop()
-        self.Book.symbol = new_symbol
-        self.Book.a.config(text=new_title)
-        self.Book.b.config(text=new_sub)
-        self.Book.websocket = CryptoWS(
-            stream=f"{new_symbol}@depth", on_message=self.Book.on_message)
-        self.Book.start()
-
-        self.Kline.symbol = new_symbol
-        self.Kline.a.config(text=new_title)
-        self.Kline.b.config(text=new_sub)
-        self.Kline.render()
+        self.stop_widgets()
+        self.change_crypto(self.selected_crypto.get())
                 
     def on_closing(self):
         '''
@@ -123,11 +118,8 @@ class Application:
         '''
         
         self.save_preferences()
-        self.Trader.stop()
-        self.Ticker.stop()
         self.MiniTicker.stop()
-        self.Book.stop()
-        # Before that, check every single widget for hiding.
+        self.stop_widgets()
         
         self.root.destroy()
         
@@ -137,11 +129,12 @@ class Application:
         '''
 
         l = [
-            "Ticker:"+str(self.Ticker.active)+"\n",
-            "Trader:"+str(self.Trader.active)+"\n",
-            "Book:"+str(self.Book.active)+"\n",
-            "Kline:"+str(self.Kline.active)+"\n",
-            "MiniTicker:"+str(self.MiniTicker.active)
+            "selected_crypto:"+str(self.new_symbol)+"\n",
+            "Ticker:"+str(self.Ticker.hiding)+"\n",
+            "Trader:"+str(self.Trader.hiding)+"\n",
+            "Book:"+str(self.Book.hiding)+"\n",
+            "Kline:"+str(self.Kline.hiding)+"\n",
+            "MiniTicker:"+str(self.MiniTicker.hiding)
         ]
         with open("preferences.txt", "w") as f:
             f.writelines(l)
@@ -161,23 +154,45 @@ class Application:
                     if len(l) != 2:
                         continue
                     key, value = l[0], l[1]
-                    if key == "Ticker" and value == "False":
+                    if key == "Ticker" and value == "True":
                         self.Ticker.hide()
-                    elif key == "Trader" and value == "False":
+                    elif key == "Trader" and value == "True":
                         self.Trader.hide()
-                    elif key == "Book" and value == "False":
+                    elif key == "Book" and value == "True":
                         self.Book.hide()
-                    elif key == "Kline" and value == "False":
+                    elif key == "Kline" and value == "True":
                         self.Kline.hide()
-                    elif key == "MiniTicker" and value == "False":
+                    elif key == "MiniTicker" and value == "True":
                         self.MiniTicker.hide()
+                    elif key == "selected_crypto":
+                        self.selected_crypto.set(value)
     
         except FileNotFoundError:
             pass  # No preferences file found. Skip.
-
+        
+    def stop_widgets(self):
+        '''
+        Stop all the application's widgets.
+        '''
+        
+        self.Book.stop()
+        self.Trader.stop()
+        self.Ticker.stop()
+        
+    def start_widgets(self):
+        '''
+        Start all the application's widgets.
+        '''
+        
+        self.Book.start()
+        self.Trader.start()
+        self.Kline.start()
+        self.Ticker.start()
+    
 if __name__ == "__main__":
     root = tk.Tk()
     app = Application(root)
     app.load_preferences()
+    app.start_widgets()
     root.protocol("WM_DELETE_WINDOW", app.on_closing)
     root.mainloop()

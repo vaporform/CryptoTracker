@@ -26,15 +26,14 @@ class Book(BaseUI.Widget):
         '''
         target = self.frame
         col_width = 100
-        self.ask_tree = ttk.Treeview(target, columns=(
-            "Ask", "Quantity"), show="headings", height=10)
+        self.ask_tree = ttk.Treeview(target, columns=("Ask", "Quantity"), show="headings")
         self.ask_tree.column("Ask", width=col_width, minwidth=50)
         self.ask_tree.column("Quantity", width=col_width, minwidth=50)
 
         self.ask_tree.heading("Ask", text="Ask (Low to High)")
         self.ask_tree.heading("Quantity", text="Quantity")
 
-        self.bid_tree = ttk.Treeview(target, columns=("Bid", "Quantity"), show="headings", height=10)
+        self.bid_tree = ttk.Treeview(target, columns=("Bid", "Quantity"), show="headings")
         self.bid_tree.column("Bid", width=col_width, minwidth=50)
         self.bid_tree.column("Quantity", width=col_width, minwidth=50)
 
@@ -44,8 +43,8 @@ class Book(BaseUI.Widget):
         self.ask_tree.tag_configure("Ask", foreground="red")
         self.bid_tree.tag_configure("Bid", foreground="green")
 
-        self.ask_tree.pack()
-        self.bid_tree.pack()
+        self.ask_tree.pack(expand=True, fill="both")
+        self.bid_tree.pack(expand=True, fill="both")
 
         
     def render(self, bids, asks):
@@ -100,7 +99,7 @@ class Book(BaseUI.Widget):
         '''
         Stop the ticker updates.
         '''
-        
+            
         if not self.is_active:
             return
         

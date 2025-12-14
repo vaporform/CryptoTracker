@@ -100,7 +100,8 @@ class TradeHistory(BaseUI.Widget):
         '''
         Stop the ticker updates.
         '''
-        
+        for row in self.tree.get_children():
+            self.tree.delete(row)
         if not self.is_active:
             return
         self.is_active = False

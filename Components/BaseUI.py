@@ -56,7 +56,7 @@ class Widget:
             c.pack(side=tk.LEFT, expand=True, fill="both")
         
         # Anf then, pack the header!
-        self.header.pack(side=tk.TOP, fill="x", expand=True)
+        self.header.pack(side=tk.TOP, fill="x")
 
     def create_ui(self):
         '''
@@ -70,11 +70,14 @@ class Widget:
         '''
         Allow the widget to hide/unhide.
         '''
-
         if self.hiding:
-            self.frame.pack()
+            self.frame.pack(side=tk.TOP, fill="both", expand=True)
+            self.frame.pack_configure(fill="both", expand=True)
+            self.button.config(text="Hide")
         else:
+            self.frame.pack_configure(fill="x", expand=False)
             self.frame.pack_forget()
+            self.button.config(text="Show")
         self.hiding = not self.hiding
 
     def pack(self, **kwargs):

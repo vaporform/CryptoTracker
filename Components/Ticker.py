@@ -108,10 +108,10 @@ class MiniTicker(BaseUI.Widget):
         for i, symbol in enumerate(ws_list):
             ws = CryptoWS(stream=f"{symbol}@ticker",
                                   on_message=self.on_message)
-            n = [symbol,ws,self.create_ui(i,symbol)]
+            n = [symbol,ws,self.create_mini_ui(i,symbol)]
             self.ws_a.append(n)
      
-    def create_ui(self,index,name):
+    def create_mini_ui(self,index,name):
         '''
         Initialize the interface for the ticker.
         '''
