@@ -9,6 +9,7 @@ A real-time cryptocurrency dashboard that displays ticker information, order boo
 - **Order Book:** See the current buy and sell orders.
 - **Trade History:** Track recent trades as they happen.
 - **Kline Chart:** Candlestick chart to visualize price changes.
+- **Preferences:** App saves which windows you have hidden and which cryptocurrency you last checked.
 
 ## Project Structure
 
@@ -16,6 +17,7 @@ A real-time cryptocurrency dashboard that displays ticker information, order boo
 CryptoTracker/
 ├─ README.md              # This file
 ├─ Preview.png            # Image showing the application
+├─ Preview_Video.mp4            # Video showcasing basic functionalities
 ├─ requirements.txt       # Listing of required Python libraries
 ├─ main.py                # The program itself
 ├─ Components/
@@ -36,17 +38,17 @@ Next, you can download the repository directly or clone it via
 ```
 git clone https://github.com/vaporform/CryptoTracker.git
 ```
-Open the folder by using prefered IDE or in the terminal:
+Open the folder using your preferred IDE or in the terminal:
 ```
 cd path/to/your/folder
 ```
-Next, it is OK to run without using virtual enviroments but it is recommended as to not create dependency conficts.
+Next, it is OK to run without using virtual environments, but it is recommended to avoid creating dependency conflicts.
 
-To create a virtual environement, you can run:
+To create a virtual environment, you can run:
 ```
 python -m venv myvenv
 ```
-Then, activate by do the following:
+Then, activate it by doing the following:
 -   On Windows:
     ```bash
     .\myvenv\Scripts\activate
