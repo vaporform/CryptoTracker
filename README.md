@@ -3,8 +3,6 @@
 A real-time cryptocurrency dashboard that displays ticker information, order books, and trade history.
 ![An image preview of the app](https://github.com/vaporform/CryptoTracker/blob/main/Preview.png)
 
-https://github.com/vaporform/CryptoTracker/blob/main/Preview_Video.mp4
-
 ## Features
 
 - **Real-time Ticker:** View live price updates for various cryptocurrencies.
@@ -13,13 +11,15 @@ https://github.com/vaporform/CryptoTracker/blob/main/Preview_Video.mp4
 - **Kline Chart:** Candlestick chart to visualize price changes.
 - **Preferences:** App saves which windows you have hidden and which cryptocurrency you last checked.
 
+https://github.com/user-attachments/assets/aaf6f001-b48d-48bb-82b2-046379612a03
+
 ## Project Structure
 
 ```
 CryptoTracker/
 ├─ README.md              # This file
 ├─ Preview.png            # Image showing the application
-├─ Preview_Video.mp4            # Video showcasing basic functionalities
+├─ Preview_Video.mp4      # Video showcasing basic functionalities
 ├─ requirements.txt       # Listing of required Python libraries
 ├─ main.py                # The program itself
 ├─ Components/
