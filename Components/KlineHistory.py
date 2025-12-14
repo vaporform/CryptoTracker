@@ -114,6 +114,7 @@ class KlineHistory(BaseUI.Widget):
         self.ax.set_ylabel("Price")
         self.ax.get_xaxis().set_visible(False)
         self.ax.autoscale_view()
+        self.ax.title.set_text(f"Candlestick Chart 1h interval")
         self.fig.tight_layout()
         
         # Show a label for every 6th hour to prevent clutter
