@@ -31,15 +31,14 @@ class Book(BaseUI.Widget):
         self.ask_tree.column("Ask", width=col_width, minwidth=50)
         self.ask_tree.column("Quantity", width=col_width, minwidth=50)
 
-        self.ask_tree.heading("Ask", text="Ask")
+        self.ask_tree.heading("Ask", text="Ask (Low to High)")
         self.ask_tree.heading("Quantity", text="Quantity")
 
-        self.bid_tree = ttk.Treeview(target, columns=(
-            "Bid", "Quantity"), show="headings", height=10)
+        self.bid_tree = ttk.Treeview(target, columns=("Bid", "Quantity"), show="headings", height=10)
         self.bid_tree.column("Bid", width=col_width, minwidth=50)
         self.bid_tree.column("Quantity", width=col_width, minwidth=50)
 
-        self.bid_tree.heading("Bid", text="Bid")
+        self.bid_tree.heading("Bid", text="Bid (High to Low)")
         self.bid_tree.heading("Quantity", text="Quantity")
 
         self.ask_tree.tag_configure("Ask", foreground="red")
@@ -61,8 +60,8 @@ class Book(BaseUI.Widget):
         for row in self.bid_tree.get_children():
             self.bid_tree.delete(row)
 
-        # Since this is an ASK (Selling), the lowest price must be on TOP.
-        for price, qty in reversed(asks):
+        # ASK (Selling), the lowest price must be on TOP.
+        for price, qty in asks:
             line = f"{float(price):,.2f}",f"{float(qty):.6f}"
             self.ask_tree.insert("", tk.END, values=line, tags=("Ask",))
 
