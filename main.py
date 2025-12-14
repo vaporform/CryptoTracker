@@ -12,12 +12,13 @@ from Components.CryptoHelper import CryptoWS
 class Application:
     def __init__(self, root):
         self.cryptos = [
-            'btcusdt',
-            'ethusdt',
-            'solusdt',
-            'xrpusdt',
-            'dogeusdt'
+            "btcusdt",
+            "ethusdt",
+            "solusdt",
+            "xrpusdt",
+            "dogeusdt"
         ]
+
         self.root = root
         self.root.title("Crypto Dashboard")
         self.root.geometry("1280x720")
@@ -58,14 +59,11 @@ class Application:
         self.MiniTicker = MiniTicker(mainframe, self.cryptos)
         self.MiniTicker.grid(row=2, column=0, sticky="nsew", padx=(0, 5), pady=(0, 2))
         # Row 4, Col 0: Trade History
-        self.Trader = TradeHistory(
-            mainframe, "btcusdt", title="BTC", sub="USDT")
-        self.Trader.grid(row=3, column=0, sticky="nsew",
-                         pady=(2, 0), padx=(0, 5))
+        self.Trader = TradeHistory(mainframe, "btcusdt", title="BTC", sub="USDT")
+        self.Trader.grid(row=3, column=0, sticky="nsew",pady=(2, 0), padx=(0, 5))
 
         # Row 0, Col 1: Kline History (Spans 5 rows)
-        self.Kline = KlineHistory(
-            mainframe, "btcusdt", title="BTC", sub="USDT")
+        self.Kline = KlineHistory(mainframe, "btcusdt", title="BTC", sub="USDT")
         self.Kline.grid(row=0, column=1, rowspan=5, sticky="nsew", padx=5) # Changed rowspan to 5
 
         # Row 0, Col 2: Book (Spans 5 rows)
@@ -82,9 +80,12 @@ class Application:
         self.MiniTicker.start()
 
     def on_crypto_select(self, *args):
-        '''Callback for when a new crypto is selected from the dropdown.'''
+        '''
+        Callback for when a new crypto is selected from the dropdown.
+        '''
+
         new_symbol = self.selected_crypto.get()
-        new_title = new_symbol.replace('usdt', '').upper()
+        new_title = new_symbol.replace("usdt", "").upper()
         new_sub = "USDT"
 
         self.Ticker.stop()
@@ -117,7 +118,10 @@ class Application:
         self.Kline.render()
                 
     def on_closing(self):
-        '''Clean up for those websockets.'''
+        '''
+        Clean up for those websockets and saving.
+        '''
+        
         self.save_preferences()
         self.Trader.stop()
         self.Ticker.stop()
@@ -128,7 +132,10 @@ class Application:
         self.root.destroy()
         
     def save_preferences(self):
-        '''Save user preferences to a file.'''
+        '''
+        Save user preferences to a file.
+        '''
+
         l = [
             "Ticker:"+str(self.Ticker.active)+"\n",
             "Trader:"+str(self.Trader.active)+"\n",
@@ -141,7 +148,10 @@ class Application:
         pass  # Implement saving logic here
     
     def load_preferences(self):
-        '''Load user preferences from a file.'''
+        '''
+        Load user preferences from a file.
+        '''
+        
         try:
             with open("preferences.txt", "r") as f:
                 lines = f.readlines()
