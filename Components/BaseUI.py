@@ -72,10 +72,8 @@ class Widget:
         '''
         if self.hiding:
             self.frame.pack(side=tk.TOP, fill="both", expand=True)
-            self.frame.pack_configure(fill="both", expand=True)
             self.button.config(text="Hide")
         else:
-            self.frame.pack_configure(fill="x", expand=False)
             self.frame.pack_forget()
             self.button.config(text="Show")
         self.hiding = not self.hiding

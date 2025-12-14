@@ -135,8 +135,9 @@ class KlineHistory(BaseUI.Widget):
         '''
         Start the rendering.
         '''
-
-        self.parent.after(60000, self.render)  # Update 60 seconds :)
+        
+        self.render()
+        self.parent.after(60000, self.start)  # Reschedule itself for continuous updates
 
 if __name__ == "__main__":
     '''

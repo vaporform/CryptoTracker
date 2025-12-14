@@ -165,7 +165,9 @@ class Application:
                     elif key == "MiniTicker" and value == "True":
                         self.MiniTicker.hide()
                     elif key == "selected_crypto":
-                        self.selected_crypto.set(value)
+                        if value in self.cryptos:
+                            self.selected_crypto.set(value)
+                            # Don't call change_crypto here - it will be called when widgets start
     
         except FileNotFoundError:
             pass  # No preferences file found. Skip.
