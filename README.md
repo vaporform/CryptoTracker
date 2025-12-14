@@ -1,7 +1,7 @@
 # CryptoTracker
 
 A real-time cryptocurrency dashboard that displays ticker information, order books, and trade history.
-
+![An image preview of the app](https://github.com/vaporform/CryptoTracker/blob/main/Preview.png)
 ## Features
 
 - **Real-time Ticker:** View live price updates for various cryptocurrencies.
