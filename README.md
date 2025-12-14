@@ -2,12 +2,30 @@
 
 A real-time cryptocurrency dashboard that displays ticker information, order books, and trade history.
 ![An image preview of the app](https://github.com/vaporform/CryptoTracker/blob/main/Preview.png)
+
 ## Features
 
 - **Real-time Ticker:** View live price updates for various cryptocurrencies.
 - **Order Book:** See the current buy and sell orders.
 - **Trade History:** Track recent trades as they happen.
 - **Kline Chart:** Candlestick chart to visualize price changes.
+
+## Project Structure
+
+```
+CryptoTracker/
+├─ README.md              # This file
+├─ Preview.png            # Image showing the application
+├─ requirements.txt       # Listing of required Python libraries
+├─ main.py                # The program itself
+├─ Components/
+│  ├─ BaseUI.py           # Base widget class with header
+│  ├─ Ticker.py           # Single and mini ticker widgets (WS)
+│  ├─ Book.py             # Order book with asks and bids (WS)
+│  ├─ TradeHistory.py     # Trade listing (WS)
+│  ├─ KlineHistory.py     # Candlestick charts and Volume (REST)
+│  └─ CryptoHelper.py     # REST/WS helpers
+```
 
 ## Setup
 Before running, ensure Python is installed on your system.
